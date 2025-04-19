@@ -1,0 +1,133 @@
+{
+  "data_flow": [
+    {
+      "var_id": 1,
+      "name": "duration",
+      "type": "Quantity",
+      "description": "The time duration for a simulation run",
+      "defined_in": { "node": 1, "line": 403 },
+      "flows": [
+        { "node": 1, "line": 404, "operation": "parameter" },
+        { "node": 2, "line": 197, "operation": "passed_to" },
+        { "node": 3, "line": 1062, "operation": "passed_to" },
+        {
+          "node": 3,
+          "line": 1075,
+          "operation": "used_in_calculation",
+          "expr": "t_end = self.t + duration"
+        }
+      ]
+    },
+    {
+      "var_id": 2,
+      "name": "self.N",
+      "type": "int",
+      "description": "Number of neurons in a group",
+      "defined_in": { "node": 11, "line": 157 },
+      "flows": [
+        {
+          "node": 11,
+          "line": 157,
+          "operation": "assignment",
+          "expr": "self.N = N = int(N)"
+        }
+      ]
+    },
+    {
+      "var_id": 3,
+      "name": "active_objects",
+      "type": "list",
+      "description": "List of BrianObjects that are active in the simulation",
+      "defined_in": { "node": 3, "line": 1110 },
+      "flows": [
+        {
+          "node": 3,
+          "line": 1110,
+          "operation": "definition",
+          "expr": "active_objects = [obj for obj in all_objects if obj.active]"
+        },
+        {
+          "node": 12,
+          "line": 1139,
+          "operation": "iteration",
+          "expr": "for obj in active_objects"
+        },
+        {
+          "node": 12,
+          "line": 1144,
+          "operation": "iteration",
+          "expr": "for obj in active_objects"
+        }
+      ]
+    },
+    {
+      "var_id": 4,
+      "name": "t_end",
+      "type": "Quantity",
+      "description": "End time for simulation",
+      "defined_in": { "node": 3, "line": 1075 },
+      "flows": [
+        {
+          "node": 3,
+          "line": 1075,
+          "operation": "assignment",
+          "expr": "t_end = self.t + duration"
+        },
+        {
+          "node": 3,
+          "line": 1078,
+          "operation": "passed_to",
+          "expr": "clock.set_interval(self.t, t_end)"
+        },
+        {
+          "node": 12,
+          "line": 1132,
+          "operation": "used_in_calculation",
+          "expr": "(self.t_ - float(t_start)) / float(t_end - t_start)"
+        }
+      ]
+    },
+    {
+      "var_id": 5,
+      "name": "clock",
+      "type": "Clock",
+      "description": "Clock that drives the simulation",
+      "defined_in": { "node": 3, "line": 1077 },
+      "flows": [
+        {
+          "node": 3,
+          "line": 1077,
+          "operation": "assignment",
+          "expr": "clock = list(self._clocks)[0]"
+        },
+        {
+          "node": 3,
+          "line": 1078,
+          "operation": "method_call",
+          "expr": "clock.set_interval(self.t, t_end)"
+        },
+        {
+          "node": 12,
+          "line": 1126,
+          "operation": "access",
+          "expr": "timestep, t, dt = self._clock_variables[clock]"
+        }
+      ]
+    }
+  ],
+  "context_variables": [
+    {
+      "scope": "global",
+      "name": "defaultclock",
+      "type": "Clock",
+      "description": "Default clock used in simulations",
+      "default_value": "dt=0.1*ms"
+    },
+    {
+      "scope": "global",
+      "name": "magic_network",
+      "type": "MagicNetwork",
+      "description": "Automatic network used by run() function"
+    }
+  ]
+}

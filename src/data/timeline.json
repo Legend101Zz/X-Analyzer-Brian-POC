@@ -1,0 +1,100 @@
+{
+  "events": [
+    {
+      "event_id": 1,
+      "timestamp_ms": 0,
+      "node_id": 1,
+      "description": "User calls run(1*ms)"
+    },
+    {
+      "event_id": 2,
+      "timestamp_ms": 1,
+      "node_id": 2,
+      "description": "magic_network.run() is called with duration=1*ms"
+    },
+    {
+      "event_id": 3,
+      "timestamp_ms": 2,
+      "node_id": 3,
+      "description": "Network.run() is called with duration=1*ms"
+    },
+    {
+      "event_id": 4,
+      "timestamp_ms": 3,
+      "node_id": 10,
+      "description": "Setting up Clock with dt=0.1ms for simulation between t=0ms and t=1ms"
+    },
+    {
+      "event_id": 5,
+      "timestamp_ms": 5,
+      "node_id": 4,
+      "description": "Network.before_run() prepares all objects in the network"
+    },
+    {
+      "event_id": 6,
+      "timestamp_ms": 6,
+      "node_id": 6,
+      "description": "BrianObject.before_run() called for NeuronGroup object"
+    },
+    {
+      "event_id": 7,
+      "timestamp_ms": 10,
+      "node_id": 12,
+      "description": "Main simulation loop begins, t=0ms, 10 timesteps to go"
+    },
+    {
+      "event_id": 8,
+      "timestamp_ms": 11,
+      "node_id": 5,
+      "description": "Network._nextclocks() determines clock for update"
+    },
+    {
+      "event_id": 9,
+      "timestamp_ms": 12,
+      "node_id": 7,
+      "description": "BrianObject.run() called for NeuronGroup at t=0ms"
+    },
+    {
+      "event_id": 10,
+      "timestamp_ms": 20,
+      "node_id": 12,
+      "description": "Timestep complete, advancing clock to t=0.1ms"
+    },
+    {
+      "event_id": 11,
+      "timestamp_ms": 21,
+      "node_id": 5,
+      "description": "Network._nextclocks() determines clock for update"
+    },
+    {
+      "event_id": 12,
+      "timestamp_ms": 22,
+      "node_id": 7,
+      "description": "BrianObject.run() called for NeuronGroup at t=0.1ms"
+    },
+    {
+      "event_id": 13,
+      "timestamp_ms": 100,
+      "node_id": 12,
+      "description": "Simulation complete after 10 timesteps (t=1ms)"
+    },
+    {
+      "event_id": 14,
+      "timestamp_ms": 102,
+      "node_id": 9,
+      "description": "Network.after_run() called"
+    },
+    {
+      "event_id": 15,
+      "timestamp_ms": 103,
+      "node_id": 8,
+      "description": "BrianObject.after_run() called for NeuronGroup"
+    },
+    {
+      "event_id": 16,
+      "timestamp_ms": 105,
+      "node_id": 3,
+      "description": "Simulation finished (duration: 1ms, physical runtime: 105ms)"
+    }
+  ]
+}

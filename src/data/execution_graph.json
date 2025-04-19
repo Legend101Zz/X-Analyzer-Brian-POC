@@ -1,0 +1,161 @@
+{
+  "graph": {
+    "nodes": [
+      {
+        "id": 1,
+        "name": "run",
+        "file_path": "brian2/core/magic.py",
+        "line_start": 403,
+        "line_end": 461,
+        "type": "function",
+        "module": "core.magic",
+        "short_description": "Entry point for simulations",
+        "snippet": "@check_units(duration=second, report_period=second)\ndef run(duration, report=None, report_period=10*second, namespace=None, profile=None, level=0):\n    \"\"\"Run a simulation with all 'visible' Brian objects for the given duration.\"\"\"\n    return magic_network.run(\n        duration,\n        report=report,\n        report_period=report_period,\n        namespace=namespace,\n        profile=profile,\n        level=2 + level,\n    )"
+      },
+      {
+        "id": 2,
+        "name": "MagicNetwork.run",
+        "file_path": "brian2/core/magic.py",
+        "line_start": 197,
+        "line_end": 205,
+        "type": "method",
+        "module": "core.magic",
+        "short_description": "MagicNetwork automatic collection/execution",
+        "snippet": "def run(self, duration, report=None, report_period=10*second, namespace=None, profile=None, level=0):\n    self._update_magic_objects(level=level+1)\n    Network.run(\n        self,\n        duration,\n        report=report,\n        report_period=report_period,\n        namespace=namespace,\n        profile=profile,\n        level=level+1\n    )"
+      },
+      {
+        "id": 3,
+        "name": "Network.run",
+        "file_path": "brian2/core/network.py",
+        "line_start": 1062,
+        "line_end": 1214,
+        "type": "method",
+        "module": "core.network",
+        "short_description": "Main simulation driver",
+        "snippet": "@device_override(\"network_run\")\n@check_units(duration=second, report_period=second)\ndef run(self, duration, report=None, report_period=10*second, namespace=None, profile=None, level=0):\n    # Get all objects, clocks, set up variables\n    all_objects = self.sorted_objects\n    self._clocks = {obj.clock for obj in all_objects}\n    single_clock = len(self._clocks) == 1\n\n    t_start = self.t\n    t_end = self.t + duration\n    \n    # Set up clocks for the run\n    if single_clock:\n        clock = list(self._clocks)[0]\n        clock.set_interval(self.t, t_end)\n    else:\n        # Get references to clock variables\n        self._clock_variables = {c: (c.variables[\"timestep\"].get_value(),\n                                 c.variables[\"t\"].get_value(),\n                                 c.variables[\"dt\"].get_value())\n                            for c in self._clocks}"
+      },
+      {
+        "id": 4,
+        "name": "Network.before_run",
+        "file_path": "brian2/core/network.py",
+        "line_start": 850,
+        "line_end": 951,
+        "type": "method",
+        "module": "core.network",
+        "short_description": "Prepare objects for simulation",
+        "snippet": "@device_override(\"network_before_run\")\ndef before_run(self, run_namespace):\n    \"\"\"Prepares the Network for a run.\"\"\"\n    all_objects = self.sorted_objects\n    prefs.check_all_validated()\n\n    # Check names in the network for uniqueness\n    names = [obj.name for obj in all_objects]\n    non_unique_names = [name for name, count in Counter(names).items() if count > 1]\n    if len(non_unique_names):\n        formatted_names = ', '.join(f\"'{name}'\" for name in non_unique_names)\n        raise ValueError(\"All objects in a network need to have unique names, \"\n                         f\"the following name(s) were used more than once: {formatted_names}\")"
+      },
+      {
+        "id": 5,
+        "name": "Network._nextclocks",
+        "file_path": "brian2/core/network.py",
+        "line_start": 791,
+        "line_end": 805,
+        "type": "method",
+        "module": "core.network",
+        "short_description": "Determine next clock(s) to update",
+        "snippet": "def _nextclocks(self):\n    clocks_times_dt = [\n        (c, self._clock_variables[c][1][0], self._clock_variables[c][2][0])\n        for c in self._clocks\n    ]\n    minclock, min_time, minclock_dt = min(clocks_times_dt, key=lambda k: k[1])\n    curclocks = {\n        clock\n        for clock, time, dt in clocks_times_dt\n        if (time == min_time\n            or abs(time - min_time) / min(minclock_dt, dt) < Clock.epsilon_dt)\n    }\n    return minclock, curclocks"
+      },
+      {
+        "id": 6,
+        "name": "BrianObject.before_run",
+        "file_path": "brian2/core/base.py",
+        "line_start": 468,
+        "line_end": 475,
+        "type": "method",
+        "module": "core.base",
+        "short_description": "Prepare objects before simulation",
+        "snippet": "def before_run(self, run_namespace):\n    \"\"\"Optional method to prepare the object before a run.\n\n    Called by `Network.after_run` before the main simulation loop starts.\n    \"\"\"\n    for codeobj in self._code_objects:\n        codeobj.before_run()"
+      },
+      {
+        "id": 7,
+        "name": "BrianObject.run",
+        "file_path": "brian2/core/base.py",
+        "line_start": 477,
+        "line_end": 479,
+        "type": "method",
+        "module": "core.base",
+        "short_description": "Execute one time step",
+        "snippet": "def run(self):\n    for codeobj in self._code_objects:\n        codeobj()"
+      },
+      {
+        "id": 8,
+        "name": "BrianObject.after_run",
+        "file_path": "brian2/core/base.py",
+        "line_start": 481,
+        "line_end": 487,
+        "type": "method",
+        "module": "core.base",
+        "short_description": "Clean up after simulation",
+        "snippet": "def after_run(self):\n    \"\"\"Optional method to do work after a run is finished.\n\n    Called by `Network.after_run` after the main simulation loop terminated.\n    \"\"\"\n    for codeobj in self._code_objects:\n        codeobj.after_run()"
+      },
+      {
+        "id": 9,
+        "name": "Network.after_run",
+        "file_path": "brian2/core/network.py",
+        "line_start": 953,
+        "line_end": 959,
+        "type": "method",
+        "module": "core.network",
+        "short_description": "Clean up after simulation",
+        "snippet": "@device_override(\"network_after_run\")\ndef after_run(self):\n    \"\"\"Clean up after a run.\"\"\"\n    for obj in self.sorted_objects:\n        if obj.active:\n            obj.after_run()"
+      },
+      {
+        "id": 10,
+        "name": "Clock.set_interval",
+        "file_path": "brian2/core/clocks.py",
+        "line_start": 180,
+        "line_end": 204,
+        "type": "method",
+        "module": "core.clocks",
+        "short_description": "Set simulation time interval",
+        "snippet": "@check_units(start=second, end=second)\ndef set_interval(self, start, end):\n    \"\"\"Set the start and end time of the simulation.\n\n    Sets the start and end value of the clock precisely if\n    possible (using epsilon) or rounding up if not. This assures that\n    multiple calls to `Network.run` will not re-run the same time step.\n    \"\"\"\n    self._set_t_update_dt(target_t=start)\n    end = float(end)\n    self._i_end = self._calc_timestep(end)"
+      },
+      {
+        "id": 11,
+        "name": "NeuronGroup.__init__",
+        "file_path": "brian2/groups/neurongroup.py",
+        "line_start": 145,
+        "line_end": 450,
+        "type": "method",
+        "module": "groups.neurongroup",
+        "short_description": "Create neuron population",
+        "snippet": "def __init__(self, N, model=None, threshold=None, reset=None, refractory=False,\n             events=None, method=None, namespace=None, dtype=None, dt=None,\n             clock=None, order=0, name='neurongroup*'):\n    \"\"\"Create a new neuron group.\"\"\"\n    self.codeobj_class = None\n    Group.__init__(self, name=name)\n    \n    self.namespace = namespace\n\n    self.N = N = int(N)  # Total number of neurons\n\n    # Variables defined by the user\n    self.user_variables = []\n    \n    # Setup the equations\n    if isinstance(model, str):\n        self.equations = Equations(model)\n    else:\n        self.equations = model"
+      },
+      {
+        "id": 12,
+        "name": "Network.run_main_loop",
+        "file_path": "brian2/core/network.py",
+        "line_start": 1120,
+        "line_end": 1180,
+        "type": "method",
+        "module": "core.network",
+        "short_description": "Main simulation loop",
+        "snippet": "# Main simulation loop\nwhile running and not self._stopped and not Network._globally_stopped:\n    if not single_clock:\n        timestep, t, dt = self._clock_variables[clock]\n    # update the network time to this clock's time\n    self.t_ = t[0]\n    if report is not None:\n        current = time.time()\n        if current > next_report_time:\n            report_callback(\n                (current - start_time) * second,\n                (self.t_ - float(t_start)) / float(t_end - t_start),\n                t_start,\n                duration,\n            )\n            next_report_time = current + report_period\n\n    # update the objects and tick forward the clock(s)\n    if single_clock:\n        if profile:\n            for obj in active_objects:\n                obj_time = time.time()\n                obj.run()\n                profiling_info[obj.name] += time.time() - obj_time\n        else:\n            for obj in active_objects:\n                obj.run()"
+      },
+      {
+        "id": 13,
+        "name": "StateMonitor.__init__",
+        "file_path": "brian2/monitors/statemonitor.py",
+        "line_start": 30,
+        "line_end": 150,
+        "type": "method",
+        "module": "monitors.statemonitor",
+        "short_description": "Create monitor to record variables",
+        "snippet": "def __init__(self, source, variables, record=True, dt=None, clock=None,\n             when='end', order=0, name='statemonitor*'):\n    if isinstance(variables, (str, tuple)) and not len(variables):\n        raise ValueError('Need at least one variable to record')\n    if isinstance(variables, str):\n        variables = [variables]\n    \n    # Group.__init__ will handle dt/clock\n    Group.__init__(self, dt=dt, clock=clock, when=when, order=order, name=name)\n    \n    self.source = source\n    self.record = record\n    self.variables = variables\n    \n    # We store the indices of recorded neurons\n    self._indices = np.array([], dtype=np.int32)"
+      }
+    ],
+    "edges": [
+      { "from": 1, "to": 2, "type": "calls" },
+      { "from": 2, "to": 3, "type": "calls" },
+      { "from": 3, "to": 4, "type": "calls" },
+      { "from": 3, "to": 5, "type": "calls" },
+      { "from": 3, "to": 7, "type": "calls_multiple" },
+      { "from": 3, "to": 9, "type": "calls" },
+      { "from": 3, "to": 10, "type": "calls" },
+      { "from": 3, "to": 12, "type": "contains" },
+      { "from": 4, "to": 6, "type": "calls_multiple" },
+      { "from": 9, "to": 8, "type": "calls_multiple" }
+    ]
+  }
+}

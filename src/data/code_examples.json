@@ -1,0 +1,26 @@
+{
+  "examples": [
+    {
+      "id": "basic_neuron",
+      "name": "Basic Neuron Model",
+      "description": "Simple leaky integrate-and-fire neuron",
+      "code": "import brian2 as b2\n\n# Define the neuron model\nneurons = b2.NeuronGroup(100, '''\ndv/dt = (I-v)/tau : volt\n''', threshold='v>-50*mV', reset='v = -70*mV')\n\n# Initialize membrane potential\nneurons.v = -70*b2.mV\n\n# Add a monitor to record spikes\nspikes = b2.SpikeMonitor(neurons)\n\n# Run the simulation\nb2.run(100*b2.ms)\n\n# Plot the results\nimport matplotlib.pyplot as plt\nplt.plot(spikes.t/b2.ms, spikes.i, '.')\nplt.xlabel('Time (ms)')\nplt.ylabel('Neuron index')\nplt.show()",
+      "related_modules": [
+        "groups.neurongroup",
+        "monitors.spikemonitor",
+        "core.magic"
+      ]
+    },
+    {
+      "id": "connectivity",
+      "name": "Synaptic Connectivity",
+      "description": "Creating connections between neurons",
+      "code": "import brian2 as b2\n\n# Create neuron groups\ninput_neurons = b2.PoissonGroup(100, rates=10*b2.Hz)\noutput_neurons = b2.NeuronGroup(10, 'dv/dt = -v/tau : volt', threshold='v>-50*mV', reset='v=-70*mV')\n\n# Create synapses\nsynapses = b2.Synapses(input_neurons, output_neurons, 'w : volt', on_pre='v += w')\n\n# Connect with random weights\nsynapses.connect(p=0.1)  # 10% connection probability\nsynapses.w = 'rand() * mV'  # Random weights between 0 and 1 mV\n\n# Monitor membrane potentials\nmon = b2.StateMonitor(output_neurons, 'v', record=True)\n\n# Run simulation\nb2.run(500*b2.ms)\n\n# Plot results\nimport matplotlib.pyplot as plt\nplt.plot(mon.t/b2.ms, mon.v.T)\nplt.xlabel('Time (ms)')\nplt.ylabel('v (volt)')\nplt.show()",
+      "related_modules": [
+        "synapses.synapses",
+        "input.poissongroup",
+        "monitors.statemonitor"
+      ]
+    }
+  ]
+}

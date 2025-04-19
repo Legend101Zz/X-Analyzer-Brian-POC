@@ -1,0 +1,46 @@
+{
+  "name": "brian2",
+  "type": "package",
+  "modules": [
+    {
+      "name": "core",
+      "type": "package",
+      "description": "Core Brian objects and simulation infrastructure",
+      "key_files": ["magic.py", "network.py", "clocks.py", "base.py"]
+    },
+    {
+      "name": "units",
+      "type": "package",
+      "description": "Unit handling system",
+      "key_files": ["fundamentalunits.py", "allunits.py"]
+    },
+    {
+      "name": "groups",
+      "type": "package",
+      "description": "Neuron and other groups",
+      "key_files": ["neurongroup.py", "group.py"]
+    },
+    {
+      "name": "synapses",
+      "type": "package",
+      "description": "Synaptic connections between neurons",
+      "key_files": ["synapses.py"]
+    },
+    {
+      "name": "monitors",
+      "type": "package",
+      "description": "Tools for recording simulation results",
+      "key_files": ["spikemonitor.py", "statemonitor.py", "ratemonitor.py"]
+    },
+    {
+      "name": "codegen",
+      "type": "package",
+      "description": "Code generation for computational efficiency",
+      "key_files": [
+        "codeobject.py",
+        "generators/numpy_generator.py",
+        "generators/cython_generator.py"
+      ]
+    }
+  ]
+}

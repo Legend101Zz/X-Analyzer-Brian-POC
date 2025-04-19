@@ -1,0 +1,45 @@
+{
+  "paths": [
+    {
+      "id": "basic_simulation",
+      "name": "Basic Neuron Simulation",
+      "description": "Learn how Brian2 simulates a simple neuron model",
+      "steps": [
+        {
+          "id": "step1",
+          "title": "Creating a NeuronGroup",
+          "file_path": "brian2/groups/neurongroup.py",
+          "line_range": [145, 450],
+          "explanation": "The NeuronGroup class is the core object representing a group of neurons. It's initialized with a count of neurons, equations describing their behavior, and optional settings for thresholds, resets, etc.",
+          "code_snippet": "import brian2 as b2\n\n# Create a group of 100 neurons with Hodgkin-Huxley dynamics\nneurons = b2.NeuronGroup(100, '''\ndv/dt = (0.04*v**2 + 5*v + 140 - u + I)/ms : 1\ndu/dt = a*(b*v - u)/ms : 1\n''', threshold='v > 30', reset='v = -65; u += d')",
+          "execution_path": [1, 11, 6]
+        },
+        {
+          "id": "step2",
+          "title": "Running a Simulation",
+          "file_path": "brian2/core/magic.py",
+          "line_range": [403, 461],
+          "explanation": "Simulations are executed with the run() function which takes a duration as its first argument. Under the hood, this uses the Network class to organize and execute the simulation.",
+          "code_snippet": "# Continue from previous step\n\n# Run the simulation for 100ms\nb2.run(100*b2.ms)",
+          "execution_path": [1, 2, 3, 4, 12, 7, 9]
+        }
+      ]
+    },
+    {
+      "id": "adding_monitors",
+      "name": "Monitoring Simulation Output",
+      "description": "Learn how to record and analyze simulation results",
+      "steps": [
+        {
+          "id": "step1",
+          "title": "Adding a StateMonitor",
+          "file_path": "brian2/monitors/statemonitor.py",
+          "line_range": [10, 150],
+          "explanation": "StateMonitor records the values of state variables during a simulation.",
+          "code_snippet": "# Create a neuron and add a monitor\ngroup = b2.NeuronGroup(1, 'dv/dt = -v/tau : 1', tau=10*b2.ms)\nmon = b2.StateMonitor(group, 'v', record=True)\n\n# Run the simulation\nb2.run(100*b2.ms)\n\n# Plot the results\nimport matplotlib.pyplot as plt\nplt.plot(mon.t/b2.ms, mon.v[0])\nplt.xlabel('Time (ms)')\nplt.ylabel('v')",
+          "execution_path": [11, 13, 1, 2, 3]
+        }
+      ]
+    }
+  ]
+}

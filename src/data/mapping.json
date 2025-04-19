@@ -1,0 +1,88 @@
+{
+  "mappings": [
+    {
+      "node_id": 1,
+      "file_path": "brian2/core/magic.py",
+      "line_start": 403,
+      "line_end": 461,
+      "function_name": "run"
+    },
+    {
+      "node_id": 2,
+      "file_path": "brian2/core/magic.py",
+      "line_start": 197,
+      "line_end": 205,
+      "function_name": "MagicNetwork.run"
+    },
+    {
+      "node_id": 3,
+      "file_path": "brian2/core/network.py",
+      "line_start": 1062,
+      "line_end": 1214,
+      "function_name": "Network.run"
+    },
+    {
+      "node_id": 4,
+      "file_path": "brian2/core/network.py",
+      "line_start": 850,
+      "line_end": 951,
+      "function_name": "Network.before_run"
+    },
+    {
+      "node_id": 5,
+      "file_path": "brian2/core/network.py",
+      "line_start": 791,
+      "line_end": 805,
+      "function_name": "Network._nextclocks"
+    },
+    {
+      "node_id": 6,
+      "file_path": "brian2/core/base.py",
+      "line_start": 468,
+      "line_end": 475,
+      "function_name": "BrianObject.before_run"
+    },
+    {
+      "node_id": 7,
+      "file_path": "brian2/core/base.py",
+      "line_start": 477,
+      "line_end": 479,
+      "function_name": "BrianObject.run"
+    },
+    {
+      "node_id": 8,
+      "file_path": "brian2/core/base.py",
+      "line_start": 481,
+      "line_end": 487,
+      "function_name": "BrianObject.after_run"
+    },
+    {
+      "node_id": 9,
+      "file_path": "brian2/core/network.py",
+      "line_start": 953,
+      "line_end": 959,
+      "function_name": "Network.after_run"
+    },
+    {
+      "node_id": 10,
+      "file_path": "brian2/core/clocks.py",
+      "line_start": 180,
+      "line_end": 204,
+      "function_name": "Clock.set_interval"
+    },
+    {
+      "node_id": 11,
+      "file_path": "brian2/groups/neurongroup.py",
+      "line_start": 145,
+      "line_end": 450,
+      "function_name": "NeuronGroup.__init__"
+    },
+    {
+      "node_id": 12,
+      "file_path": "brian2/core/network.py",
+      "line_start": 1120,
+      "line_end": 1180,
+      "function_name": "Network.run_main_loop"
+    }
+  ]
+}
