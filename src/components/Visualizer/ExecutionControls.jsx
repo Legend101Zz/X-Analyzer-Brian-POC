@@ -1,13 +1,12 @@
 import React from "react";
-import { motion } from "framer-motion";
 
 const ExecutionControls = ({
-  isPlaying,
-  canGoBack,
-  canGoForward,
-  onPlayPause,
-  onStepBack,
-  onStepForward,
+  isPlaying = false,
+  canGoBack = false,
+  canGoForward = false,
+  onPlayPause = () => {},
+  onStepBack = () => {},
+  onStepForward = () => {},
 }) => {
   return (
     <div className="flex justify-center items-center space-x-3">

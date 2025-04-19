@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import MonacoEditor from "@monaco-editor/react";
 import ExecutionControls from "../Visualizer/ExecutionControls";
+import CodeView from "./CodeView";
+import { useExecutionSimulator } from "../../contexts/ExecutionSimulatorContext"; // Add this
 
 // Import our JSON data files (in a real app, these would be fetched)
 import executionGraphData from "../../data/execution_graph.json";
@@ -15,6 +17,15 @@ const Editor = ({ module, path, readOnly = true }) => {
   const [currentLine, setCurrentLine] = useState(1);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionProgress, setExecutionProgress] = useState(0);
+
+  const {
+    currentExecution,
+    breakpoints,
+    addBreakpoint,
+    removeBreakpoint,
+    currentStepIndex,
+    simulationState,
+  } = useExecutionSimulator();
 
   // Find code snippet based on module or path
   useEffect(() => {
@@ -157,22 +168,33 @@ const Editor = ({ module, path, readOnly = true }) => {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <MonacoEditor
-          height="100%"
-          language="python"
-          theme="vs-dark"
-          value={code}
-          options={{
-            readOnly: readOnly,
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            fontSize: 14,
-            lineNumbers: "on",
-            wordWrap: "on",
-            automaticLayout: true,
+        <CodeView
+          filePath={module?.path || path?.file_path}
+          highlightedLines={
+            highlightRange
+              ? Array.from(
+                  {
+                    length:
+                      highlightRange.endLineNumber -
+                      highlightRange.startLineNumber +
+                      1,
+                  },
+                  (_, i) => i + highlightRange.startLineNumber,
+                )
+              : []
+          }
+          currentLine={currentLine}
+          readOnly={readOnly}
+          breakpoints={breakpoints.map((bp) => bp.line)}
+          onBreakpointToggle={(line, newBreakpoints) => {
+            if (breakpoints.some((bp) => bp.line === line)) {
+              removeBreakpoint(module?.path || path?.file_path, line);
+            } else {
+              addBreakpoint(module?.path || path?.file_path, line);
+            }
           }}
-          onMount={handleEditorDidMount}
           onChange={(value) => setCode(value)}
+          height="100%"
         />
       </div>
 

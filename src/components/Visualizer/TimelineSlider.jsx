@@ -1,7 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const TimelineSlider = ({ events, currentStep, onChange }) => {
+const TimelineSlider = ({
+  events = [],
+  currentStep = 0,
+  onChange = () => {},
+}) => {
   if (!events || events.length === 0) return null;
 
   const handleSliderChange = (e) => {
@@ -30,7 +34,7 @@ const TimelineSlider = ({ events, currentStep, onChange }) => {
           <div className="relative w-full h-2">
             {events.map((event, index) => (
               <motion.div
-                key={event.event_id}
+                key={event.event_id || index}
                 className={`absolute top-0 w-1.5 h-1.5 rounded-full transform -translate-x-1/2 -translate-y-1/4 ${
                   index <= currentStep
                     ? "bg-neuron-primary dark:bg-neuron-secondary"
