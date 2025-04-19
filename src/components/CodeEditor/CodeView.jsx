@@ -22,6 +22,20 @@ const CodeView = ({
   const [decorations, setDecorations] = useState([]);
   const { loadFile } = useCodebase();
 
+  // Safe way to get file extension
+  const getFileExtension = (path) => {
+    if (!path) return "";
+    const parts = path.split(".");
+    return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : "";
+  };
+
+  // Safe way to get file name
+  const getFileName = (path) => {
+    if (!path) return "unknown";
+    const parts = path.split("/");
+    return parts[parts.length - 1];
+  };
+
   // Load file content when filePath changes
   useEffect(() => {
     if (!filePath) {
@@ -94,6 +108,8 @@ const CodeView = ({
 
   // Function to update decorations
   const updateDecorations = (editor, monaco) => {
+    if (!editor || !monaco) return;
+
     const newDecorations = [];
 
     // Highlighted lines decoration
@@ -176,12 +192,43 @@ const CodeView = ({
     }
   };
 
+  // Determine language based on file extension
+  const getLanguage = () => {
+    const ext = getFileExtension(filePath);
+    switch (ext) {
+      case "py":
+        return "python";
+      case "js":
+      case "jsx":
+        return "javascript";
+      case "ts":
+      case "tsx":
+        return "typescript";
+      case "json":
+        return "json";
+      case "html":
+        return "html";
+      case "css":
+        return "css";
+      case "cpp":
+      case "c":
+      case "h":
+        return "cpp";
+      case "md":
+        return "markdown";
+      default:
+        return "plaintext";
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       {filePath && (
         <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-xs">
           <div className="flex justify-between items-center">
-            <span className="font-mono truncate">{filePath}</span>
+            <span className="font-mono truncate">
+              {filePath || "No file selected"}
+            </span>
             {currentLine && (
               <span className="bg-yellow-100 dark:bg-yellow-900 px-2 py-0.5 rounded text-yellow-800 dark:text-yellow-200">
                 Line {currentLine}
@@ -205,7 +252,7 @@ const CodeView = ({
 
         <MonacoEditor
           height={height}
-          language="python" // Adjust based on file extension
+          language={getLanguage()}
           theme={theme}
           value={code}
           options={{
@@ -303,7 +350,7 @@ const CodeView = ({
             <div className="flex items-center text-xs">
               <span className="font-medium mr-2">Current context:</span>
               <span className="bg-neuron-primary bg-opacity-10 dark:bg-opacity-20 text-neuron-primary dark:text-neuron-secondary px-2 py-0.5 rounded">
-                {filePath.split("/").pop()}:{currentLine}
+                {getFileName(filePath)}:{currentLine}
               </span>
             </div>
 

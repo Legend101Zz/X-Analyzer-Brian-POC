@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ReactFlow, {
   Background,
   Controls,
   MiniMap,
   useNodesState,
   useEdgesState,
-  BaseEdge,
-  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { motion } from "framer-motion";
@@ -67,6 +65,29 @@ const nodeTypes = {
   ),
 };
 
+// We need to define a BaseEdge component if we're using custom edge types
+const BaseEdge = ({
+  id,
+  source,
+  target,
+  animated,
+  style,
+  className,
+  markerEnd,
+}) => {
+  // This is a simplified version - you may need to implement more complex edge rendering
+  return (
+    <path
+      id={id}
+      className={className}
+      style={style}
+      d={`M${source.x},${source.y}L${target.x},${target.y}`}
+      markerEnd={markerEnd}
+      strokeDasharray={style?.strokeDasharray}
+    />
+  );
+};
+
 // Custom edge types
 const edgeTypes = {
   imports: ({ id, source, target, animated, style }) => (
@@ -123,14 +144,13 @@ const CodeRelationshipVisualizer = ({
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [loading, setLoading] = useState(true);
-  const [relationType, setRelationType] = useState("all");
+  const [relationType, setRelationType] = useState("all"); // all, imports, extends, calls, implements
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredNodes, setFilteredNodes] = useState([]);
   const [filteredEdges, setFilteredEdges] = useState([]);
-  const [localViewType, setViewType] = useState(viewType); /
+  const [localViewType, setViewType] = useState(viewType); // Added state for local view type
   const flowRef = useRef(null);
-  const [rfInstance, setRfInstance] = useState(null);
-
+  const [rfInstance, setRfInstance] = useState(null); // Added state for ReactFlow instance
 
   // Function to fit view
   const fitView = useCallback(() => {
@@ -146,7 +166,7 @@ const CodeRelationshipVisualizer = ({
     // This would be fetched from API in a real app
     // Here we'll create sample data based on the uploaded file structure
 
-    if (viewType === "modules") {
+    if (localViewType === "modules") {
       // Create a module relationship graph from the uploaded structure
       const moduleNodes = [
         {
@@ -274,7 +294,7 @@ const CodeRelationshipVisualizer = ({
       setEdges(moduleEdges);
       setFilteredNodes(moduleNodes);
       setFilteredEdges(moduleEdges);
-    } else if (viewType === "inheritance") {
+    } else if (localViewType === "inheritance") {
       // Create a class inheritance graph
       const classNodes = [
         {
@@ -422,7 +442,7 @@ const CodeRelationshipVisualizer = ({
       setEdges(classEdges);
       setFilteredNodes(classNodes);
       setFilteredEdges(classEdges);
-    } else if (viewType === "dataflow") {
+    } else if (localViewType === "dataflow") {
       // Create a function call/data flow graph
       const functionNodes = [
         {
@@ -588,7 +608,7 @@ const CodeRelationshipVisualizer = ({
       setEdges(functionEdges);
       setFilteredNodes(functionNodes);
       setFilteredEdges(functionEdges);
-    } else if (viewType === "dependencies") {
+    } else if (localViewType === "dependencies") {
       // Create a simplified dependency graph focused on brian2.core.magic components
       const dependencyNodes = [
         {
@@ -770,8 +790,11 @@ const CodeRelationshipVisualizer = ({
       setFilteredEdges(dependencyEdges);
     }
 
-    setLoading(false);
-  }, [viewType]);
+    // After setting nodes and edges, schedule a fit view
+    setTimeout(() => {
+      setLoading(false);
+    }, 100);
+  }, [localViewType, fitView]);
 
   // Filter nodes and edges based on search query and relation type
   useEffect(() => {
@@ -810,21 +833,21 @@ const CodeRelationshipVisualizer = ({
 
   // Fit view after filtering
   useEffect(() => {
-    if (flowRef.current && filteredNodes.length > 0) {
+    if (rfInstance && filteredNodes.length > 0) {
       setTimeout(() => {
-        flowRef.current.fitView({ padding: 0.2 });
+        fitView();
       }, 50);
     }
-  }, [filteredNodes, filteredEdges]);
+  }, [filteredNodes, filteredEdges, fitView, rfInstance]);
 
   // Zoom to fit when component mounts
   useEffect(() => {
-    if (flowRef.current && nodes.length > 0 && !loading) {
+    if (rfInstance && nodes.length > 0 && !loading) {
       setTimeout(() => {
-        flowRef.current.fitView({ padding: 0.2 });
+        fitView();
       }, 100);
     }
-  }, [loading]);
+  }, [loading, fitView, nodes.length, rfInstance]);
 
   if (loading) {
     return (
@@ -842,7 +865,7 @@ const CodeRelationshipVisualizer = ({
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             <select
-              value={viewType}
+              value={localViewType}
               onChange={(e) => setViewType(e.target.value)}
               className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 bg-white dark:bg-gray-700 text-neuron-text-light dark:text-neuron-text-dark focus:outline-none focus:ring-1 focus:ring-neuron-primary"
             >
@@ -900,6 +923,7 @@ const CodeRelationshipVisualizer = ({
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           onNodeClick={(_, node) => onNodeClick(node)}
+          onInit={setRfInstance} // Set the RF instance when initialized
           fitView
           minZoom={0.1}
           maxZoom={2}
